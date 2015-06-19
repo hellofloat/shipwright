@@ -1,0 +1,29 @@
+{
+  "name": "shipwright",
+  "version": "0.0.1",
+  "description": "DigitalOcean CLI control",
+  "license": "MIT",
+  "author": {
+    "name": "Andy Burke",
+    "email": "aburke@bitflood.org",
+    "url": "https://github.com/andyburke"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/float/shipwright.git"
+  },
+  "bin": {
+    "shipwright": "./shipwright.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "async": "^1.2.1",
+    "dashdash": "^1.10.0",
+    "osenv": "^0.1.2",
+    "prettyjson": "^1.1.2",
+    "request": "^2.58.0",
+    "untildify": "^2.1.0"
+  }
+}
