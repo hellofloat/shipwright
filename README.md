@@ -1,4 +1,6 @@
-Shipwright <img src="https://raw.github.com/float/shipwright/master/shipwright.png" width="300" />
+![Shipwright](/shipwright.jpg?raw=true)
+
+Shipwright
 =========
 
 Shipwright is a command line interface for interacting with [DigitalOcean](https://digitalocean.com/).
