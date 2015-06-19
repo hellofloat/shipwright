@@ -188,6 +188,7 @@ droplet:
 Pull requests are very welcome! Just make sure your code:
 
 1) Passes jshint given the included .jshintrc
+
 2) Is beautified using jsbeautifier and the included .jsbeautifyrc
 
 ## Why?
