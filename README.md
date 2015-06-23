@@ -38,6 +38,8 @@ options:
     --json          Output responses in raw JSON.
     --pretty        If set, will output more human-readable JSON.
     --stdin         If set, will read the request body from stdin.
+    --wait          If set, will wait for the created action to complete. Eg:
+                    when creating a droplet will wait for successful creation.
 ```
 
 ### Operations
