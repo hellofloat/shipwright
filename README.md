@@ -198,6 +198,10 @@ basically just passes things on to the API. It's really just a glorified curl.
 
 # CHANGELOG
 
+v0.1.0
+------
+- Added the --wait option to wait for action completion.
+
 v0.0.1
 ------
 - Initial release.

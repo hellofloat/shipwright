@@ -34,4 +34,8 @@ module.exports = [ {
 	name: 'stdin',
 	type: 'bool',
 	help: 'If set, will read the request body from stdin.'
+}, {
+	name: 'wait',
+	type: 'bool',
+	help: 'If set, will wait for the created action to complete. Eg: when creating a droplet will wait for successful creation.'
 } ];

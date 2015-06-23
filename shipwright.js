@@ -57,6 +57,9 @@ operation = operationAliases[ operation.toLowerCase() ] || operation;
 
 var resource = args.shift();
 var requestData = null;
+var responseData = null;
+var finalQuery = null;
+var output = null;
 
 async.series( [
 
@@ -219,19 +222,92 @@ async.series( [
 				return;
 			}
 			
-			var output = opts.json ? JSON.stringify( body, null, opts.pretty ? 4 : 0 ) : prettyjson.render( body, {} );
-
-			console.log( output );
+			responseData = body;
+			
+			output = opts.json ? JSON.stringify( responseData, null, opts.pretty ? 4 : 0 ) : prettyjson.render( responseData, {} );
 
 			next();
 		} );		
+	},
+	
+	function( next ) {
+		if ( !opts.wait ) {
+			next();
+			return;
+		}
+
+		var action = responseData.links.actions[ 0 ];
+		
+		var request = {
+			method: 'GET',
+			uri: 'actions/' + action.id,
+			headers: {
+				'Authorization': 'Bearer ' + opts.token
+			}
+		};
+		
+		(function checkAction() {
+			req( request, function( error, response, body ) {
+				if ( error ) {
+					next( error );
+					return;
+				}
+
+				if ( body.action.status.toLowerCase() === 'completed' ) {
+					finalQuery = body.action.resource_type + 's/' + body.action.resource_id; // note the pluralization before the slash
+					next();
+					return;
+				}
+				
+				if ( body.action.status.toLowerCase() === 'errored' ) {
+					next( 'Action errored!' );
+					return;
+				}
+				
+				setTimeout( checkAction, 1000 );
+			} );
+		})();
+	},
+	
+	// check if we have a final query to put into the output
+	function( next ) {
+		if ( !finalQuery ) {
+			next();
+			return;
+		}
+		
+		var request = {
+			method: 'GET',
+			uri: finalQuery,
+			headers: {
+				'Authorization': 'Bearer ' + opts.token
+			}
+		};	
+
+		req( request, function( error, response, body ) {
+			if ( error ) {
+				next( error );
+				return;
+			}
+
+			responseData = body;
+
+			output = opts.json ? JSON.stringify( responseData, null, opts.pretty ? 4 : 0 ) : prettyjson.render( responseData, {} );
+
+			next();
+		} );
 	}
 ], function( error ) {
 	if ( error ) {
 		console.error( error );
+		process.exit( 1 );
 	}
 
-	process.exit( error ? 1 : 0 );
+	if ( output ) {
+		console.log( output );
+	}
+
+	process.exit( 0 );
 } );
 
 
