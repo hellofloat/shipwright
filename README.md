@@ -82,13 +82,13 @@ Let's get a list of our SSH keys stored with DigitalOcean (we'll use them later)
 
 ```
 > shipwright get account/keys
-ssh_keys: 
-    - 
+ssh_keys:
+    -
     id:          <key id>
     fingerprint: <key fingerprint>
     public_key:  <key>
     name:        <key name>
-    - 
+    -
     id:          <key id>
     fingerprint: <key fingerprint>
     public_key:  <key>
@@ -100,14 +100,14 @@ Let's see what pre-built applications DigitalOcean has for us to use as images:
 
 ```
 > shipwright.js get images type=application
-images: 
-    - 
+images:
+    -
     id:            6423475
     name:          WordPress on 14.04
     distribution:  Ubuntu
     slug:          wordpress
     public:        true
-    regions: 
+    regions:
         - nyc1
         - ams1
         - sfo1
@@ -121,13 +121,13 @@ images:
     created_at:    2014-09-28T21:34:48Z
     min_disk_size: 20
     type:          snapshot
-    - 
+    -
     id:            10163059
     name:          FreeBSD AMP on 10.1
     distribution:  FreeBSD
     slug:          freebsd-amp
     public:        true
-    regions: 
+    regions:
         - nyc1
         - ams1
         - sfo1
@@ -147,27 +147,27 @@ images:
 Let's create a droplet in sfo1, 512mb of ram, some user data, private networking and from a docker image:
 
 ```
-> shipwright create droplets --fromfile=user_data,~/docker/base-userdata name=01-sfo1-docker region=sfo1 size=512mb image=docker ssh_keys=[<key id>,<key id>] private_networking=true 
-droplet: 
-    features: 
+> shipwright create droplets --fromfile=user_data,~/docker/base-userdata name=01-sfo1-docker region=sfo1 size=512mb image=docker ssh_keys=[<key id>,<key id>] private_networking=true
+droplet:
+    features:
         - virtio
     id:                 <droplet id>
     vcpus:              1
-    networks: 
+    networks:
 
     name:               01-sfo1-docker
     disk:               20
     memory:             512
     locked:             true
-    size: 
+    size:
 
-    snapshot_ids: 
+    snapshot_ids:
         (empty array)
-    backup_ids: 
+    backup_ids:
         (empty array)
-    image: 
+    image:
 
-    kernel: 
+    kernel:
     id:      4782
     name:    Ubuntu 14.04 x64 vmlinuz-3.13.0-52-generic-docker-memlimit
     version: 3.13.0-52-generic
@@ -175,11 +175,11 @@ droplet:
     status:             new
     next_backup_window: null
     created_at:         2015-06-19T20:32:02Z
-    region: 
+    region:
 
-    links: 
-        actions: 
-            - 
+    links:
+        actions:
+            -
             id:   <action id>
             rel:  create
             href: https://api.digitalocean.com/v2/actions/<action id>
@@ -199,6 +199,10 @@ I wanted a command line tool that gave me nearly direct access to the DigitalOce
 basically just passes things on to the API. It's really just a glorified curl.
 
 # CHANGELOG
+
+v0.1.1
+------
+- Improved error handling.
 
 v0.1.0
 ------

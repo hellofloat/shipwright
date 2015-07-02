@@ -69,29 +69,29 @@ async.series( [
 			next();
 			return;
 		}
-		
+
 		var tokenFile = path.join( osenv.home(), '.digitalocean.token' );
 		if ( !fs.existsSync( tokenFile ) ) {
 			next();
 			return;
 		}
-		
+
 		var tokenFileContent = fs.readFileSync( tokenFile, 'utf8' );
 		if ( !tokenFileContent ) {
 			next();
 			return;
 		}
-		
+
 		var lines = tokenFileContent.split( '\n' );
 		if ( !lines.length ) {
 			next();
 			return;
 		}
-		
+
 		opts.token = lines[ 0 ].trim();
 		next();
 	},
-	
+
 	// check if we have a token
 	function( next ) {
 		if ( !opts.token ) {
@@ -108,9 +108,9 @@ async.series( [
 			next();
 			return;
 		}
-		
+
 		var input = '';
-		
+
 		process.stdin.setEncoding( 'utf8' );
 
 		process.stdin.on( 'readable', function() {
@@ -131,11 +131,11 @@ async.series( [
 			next( error );
 		} );
 	},
-	
+
 	// check for parameters to add to request data
 	function( next ) {
 		var nameValueRegex = new RegExp( /^(.*?)=(.*)$/ );
-		
+
 		var arg = args.shift();
 		while( arg ) {
 			var match = nameValueRegex.exec( arg );
@@ -143,29 +143,29 @@ async.series( [
 				next( 'Unparsable parameter: ' + arg );
 				return;
 			}
-			
+
 			var name = match[ 1 ];
 			var value = val( match[ 2 ] );
-			
+
 			requestData = requestData || {};
 			requestData[ name ] = value;
-			
+
 			arg = args.shift();
 		}
-		
+
 		next();
 	},
-	
+
 	// check if we need to read any parameters from files
 	function( next ) {
 		if ( !opts.fromfile ) {
 			next();
 			return;
 		}
-		
+
 		var paramsFromFiles = opts.fromfile;
 		var nameValueRegex = new RegExp( /^(.*?),(.*)$/ );
-		
+
 		var paramFromFile = paramsFromFiles.shift();
 		while( paramFromFile ) {
 			var match = nameValueRegex.exec( paramFromFile );
@@ -185,13 +185,13 @@ async.series( [
 			var value = fs.readFileSync( filename, 'utf8' );
 			requestData = requestData || {};
 			requestData[ name ] = value ? value.trim() : null;
-			
+
 			paramFromFile = paramsFromFiles.shift();
 		}
-		
+
 		next();
 	},
-	
+
 	// make the request to DO
 	function( next ) {
 		var request = {
@@ -206,7 +206,7 @@ async.series( [
 			console.log( "Request data: " );
 			console.log( JSON.stringify( requestData, null, 4 ) );
 		}
-		
+
 		if ( requestData ) {
 			if ( operation.toUpperCase() === 'GET' ) {
 				request.qs = requestData;
@@ -221,15 +221,25 @@ async.series( [
 				next( error );
 				return;
 			}
-			
+
+			if ( response.statusCode >= 400 && response.statusCode < 600 ) {
+				next( body );
+				return;
+			}
+
+			if ( !body ) {
+				next( 'no response body' );
+				return;
+			}
+
 			responseData = body;
-			
+
 			output = opts.json ? JSON.stringify( responseData, null, opts.pretty ? 4 : 0 ) : prettyjson.render( responseData, {} );
 
 			next();
-		} );		
+		} );
 	},
-	
+
 	function( next ) {
 		if ( !opts.wait ) {
 			next();
@@ -237,7 +247,7 @@ async.series( [
 		}
 
 		var action = responseData.links.actions[ 0 ];
-		
+
 		var request = {
 			method: 'GET',
 			uri: 'actions/' + action.id,
@@ -245,7 +255,7 @@ async.series( [
 				'Authorization': 'Bearer ' + opts.token
 			}
 		};
-		
+
 		(function checkAction() {
 			req( request, function( error, response, body ) {
 				if ( error ) {
@@ -258,31 +268,31 @@ async.series( [
 					next();
 					return;
 				}
-				
+
 				if ( body.action.status.toLowerCase() === 'errored' ) {
 					next( 'Action errored!' );
 					return;
 				}
-				
+
 				setTimeout( checkAction, 1000 );
 			} );
 		})();
 	},
-	
+
 	// check if we have a final query to put into the output
 	function( next ) {
 		if ( !finalQuery ) {
 			next();
 			return;
 		}
-		
+
 		var request = {
 			method: 'GET',
 			uri: finalQuery,
 			headers: {
 				'Authorization': 'Bearer ' + opts.token
 			}
-		};	
+		};
 
 		req( request, function( error, response, body ) {
 			if ( error ) {
@@ -309,6 +319,3 @@ async.series( [
 
 	process.exit( 0 );
 } );
-
-
-
