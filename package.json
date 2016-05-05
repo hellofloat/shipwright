@@ -1,6 +1,6 @@
 {
   "name": "shipwright",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "DigitalOcean CLI control",
   "license": "MIT",
   "author": {

@@ -1,3 +1,12 @@
+# DEPRECATED
+
+NOTE: DigitalOcean has released their own command line client: https://github.com/digitalocean/doctl
+
+As such, maintainence on this package is pretty useless. It's left as an example.
+
+=========
+
+
 ![Shipwright](/shipwright.jpg?raw=true)
 
 Shipwright
